@@ -1,0 +1,67 @@
+---
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  plain:
+    format: "%(asctime)s.%(msecs)03d::%(levelname)s::%(funcName)s::%(filename)s:%(lineno)s::%(message)s"
+  json:
+    format: '{"_t": "%(asctime)s.%(msecs)03d", "_l": "%(levelname)s", "_f": "%(funcName)s", "_m": "%(filename)s:%(lineno)s", "_d": "%(message)s"}'
+  lambda_json:
+    format: '{"_l": "%(levelname)s", "_m": "%(filename)s:%(lineno)s", "_d": "%(message)s"}'
+
+handlers:
+  # use case: docker
+  console_structured:
+    class: logging.StreamHandler
+    formatter: json
+    level: DEBUG
+
+  # use case: lambda
+  console_lambda:
+    class: logging.StreamHandler
+    formatter: lambda_json
+    level: DEBUG
+
+  # use case: local
+  console_local:
+    class: logging.StreamHandler
+    formatter: plain
+    level: DEBUG
+
+  # use case: local
+  file:
+    class: logging.handlers.RotatingFileHandler
+    filename: app.log
+    formatter: json
+    level: DEBUG
+    maxBytes: 10485760 # 10MB file limit
+    backupCount: 5
+
+loggers:
+  # Library (no handlers)
+  library:
+    level: DEBUG
+    handlers: []
+    propagate: true
+
+  # Application loggers
+  local:
+    level: DEBUG
+    handlers: [console_local, file]
+    propagate: false
+
+  default:
+    level: DEBUG
+    handlers: [console_local]
+    propagate: false
+
+  docker:
+    level: DEBUG
+    handlers: [console_structured]
+    propagate: false
+
+  lambda:
+    level: DEBUG
+    handlers: [console_lambda]
+    propagate: false
