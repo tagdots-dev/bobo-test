@@ -86,7 +86,7 @@ jobs:
         uses: tagdots/setup-badge-action@294661aa1f149b59dfe1cd187539eca7f8f0fabf # 1.0.18
         with:
           badge-name: coverage
-          badge-url: https://github.com/tagdots-dev/pkg-40400/actions/workflows/cron-tasks.yaml
+          badge-url: https://github.com/${{ github.repository }}/actions/workflows/cron-tasks.yaml
           label: "Code Coverage"
           message: "${{ needs.pre-badge-coverage.outputs.COV_PER }}"
 
@@ -143,7 +143,7 @@ jobs:
     steps:
       - name: Run delete-branches # https://github.com/tagdots/delete-branches
         id: delete-branches
-        uses: tagdots/delete-branches@1067f6cf756a462d2da56cffae2df37ea15b600e # 1.2.15
+        uses: tagdots/delete-branches@7ab458c4f92b1dcd058cce7ebd57bb88ec6d21ab # 1.2.16
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
