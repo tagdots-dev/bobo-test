@@ -89,18 +89,14 @@ major_version_zero = false
 tag_format = "$version"
 update_changelog_on_bump = true
 pre_bump_hooks = [ "uv lock" ]
-# This section controls how commit types are mapped to changelog sections.
 changelog_type_mappings = [
   { type = "feat", section = "Features" },
   { type = "fix", section = "Bug Fixes" },
   { type = "perf", section = "Performance Improvements" },
-  # Add the missing types you want in your changelog:
   { type = "ci", section = "Continuous Integration" },
   { type = "build", section = "Build System" },
   { type = "docs", section = "Documentation" },
   { type = "style", section = "Styles" },
-  # You can also add other common types if you use them:
   { type = "refactor", section = "Code Refactoring" },
   { type = "test", section = "Tests" },
-  { type = "chore", section = "Chores" },
 ]
