@@ -2,6 +2,7 @@
 version: 1
 disable_existing_loggers: false
 
+# Defines log message layout, structure, and text representation
 formatters:
   plain:
     format: "%(asctime)s.%(msecs)03d::%(levelname)s::%(funcName)s::%(filename)s:%(lineno)s::%(message)s"
@@ -10,6 +11,11 @@ formatters:
   lambda_json:
     format: '{"_l": "%(levelname)s", "_m": "%(filename)s:%(lineno)s", "_d": "%(message)s"}'
 
+# Determine the destination of log messages
+# - destination be stdout, files
+# - set minimum severity level to process a message (overrides loggers: level)
+# - use a specific formatter
+# - log level: NOTSET(0) DEBUG (10), INFO (20), WARNING (30), ERROR (40), CRITICAL (50)
 handlers:
   # use case: docker
   console_structured:
@@ -38,6 +44,10 @@ handlers:
     maxBytes: 10485760 # 10MB file limit
     backupCount: 5
 
+# Capture data from app code
+# - set minimum severity level to process a message in logging
+# - route to handlers
+# - decide to pass message to its parent or not
 loggers:
   # Library (no handlers)
   library:
