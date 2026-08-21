@@ -19,7 +19,10 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
   "Topic :: Software Development :: Build Tools",
 ]
-dependencies = [ "pyyaml>=6.0.3" ]
+dependencies = [
+ "click>=8.4.2",
+ "pyyaml>=6.0.3",
+]
 urls.Changelog = "https://github.com/tagdots-dev/bobo-test/blob/main/CHANGELOG.md"
 urls.Documentation = "https://github.com/tagdots-dev/bobo-test/blob/main/README.md"
 urls.Homepage = "https://github.com/tagdots-dev"
@@ -29,8 +32,10 @@ scripts.pkg-40400 = "pkg_40400.cli:main"
 
 [dependency-groups]
 dev = [
+  "black>=26.5.1",
   "commitizen",
   "pre-commit",
+  "pytest>=9.1.1",
 ]
 test = [
   "coverage",
