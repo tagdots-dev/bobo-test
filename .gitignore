@@ -107,6 +107,10 @@ $RECYCLE.BIN/
 nohup.out
 
 
+# -------------------- AI ---------------------- #
+.claude/
+.clinerules/
+.cursor/
 
 # -------------------- Python --------------------- #
 # Byte-compiled / optimized / DLL files
@@ -330,15 +334,12 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-
-
-
-
-
 # --------------- Miscellaneous ------------------- #
 .secrets
 .vscode/
-*.key
-*.pem
 *.tmp
-id_rsa
+**/credentials.json
+**/*.key
+**/*.pem
+**/id_rsa
+**/secrets.json
