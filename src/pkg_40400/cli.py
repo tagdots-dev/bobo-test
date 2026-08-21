@@ -1,31 +1,90 @@
 """
-Test Logging and Decorator
+Application Entry Point
 """
 
+import sys
+
+import click
+
 from pkg_40400 import (
-    ClsFalseError,
     Logger,
-    raise_on_false,
-    version,
+    add,
+    divide,
+    multiply,
+    subtract,
 )
 
 
-@raise_on_false(exception_type=ClsFalseError, custom_message="")
-def try_decorator(enable_log: bool = False) -> bool:
+@click.group()
+def main() -> None:
     """
-    Return False Intentionally To Test Decorator
+    pkg-40400 CLI - A calculator service.
     """
-    return False
+    pass
 
 
-def main() -> bool:
-    Logger.info(f"{version}")
-
+@main.command()
+@click.option("--a", "a_value", type=float, required=True, help="First number")
+@click.option("--b", "b_value", type=float, required=True, help="Second number")
+def add_cmd(a_value: float, b_value: float) -> None:
+    """
+    Add two numbers: a + b
+    """
     try:
-        return try_decorator(enable_log=True)
-    except ClsFalseError:
-        return False
+        result = add(a_value, b_value)
+        Logger.info(f"Result: {a_value} + {b_value} = {result}")
+    except Exception:  # pragma: no cover
+        Logger.error("Addition failed")
+        sys.exit(1)
 
 
-if __name__ == "__main__":
+@main.command()
+@click.option("--a", "a_value", type=float, required=True, help="First number")
+@click.option("--b", "b_value", type=float, required=True, help="Second number")
+def subtract_cmd(a_value: float, b_value: float) -> None:
+    """
+    Subtract two numbers: a - b
+    """
+    try:
+        result = subtract(a_value, b_value)
+        Logger.info(f"Result: {a_value} - {b_value} = {result}")
+    except Exception:  # pragma: no cover
+        Logger.error("Subtraction failed")
+        sys.exit(1)
+
+
+@main.command()
+@click.option("--a", "a_value", type=float, required=True, help="First number")
+@click.option("--b", "b_value", type=float, required=True, help="Second number")
+def multiply_cmd(a_value: float, b_value: float) -> None:
+    """
+    Multiply two numbers: a * b
+    """
+    try:
+        result = multiply(a_value, b_value)
+        Logger.info(f"Result: {a_value} * {b_value} = {result}")
+    except Exception:  # pragma: no cover
+        Logger.error("Multiplication failed")
+        sys.exit(1)
+
+
+@main.command()
+@click.option("--a", "a_value", type=float, required=True, help="First number")
+@click.option("--b", "b_value", type=float, required=True, help="Second number")
+def divide_cmd(a_value: float, b_value: float) -> None:
+    """
+    Divide two numbers: a / b
+    """
+    try:
+        result = divide(a_value, b_value)
+        Logger.info(f"Result: {a_value} / {b_value} = {result}")
+    except ZeroDivisionError:
+        Logger.error("Division by zero error")
+        sys.exit(1)
+    except Exception:  # pragma: no cover
+        Logger.error("Division failed")
+        sys.exit(1)
+
+
+if __name__ == "__main__":  # pragma: no cover
     main()
