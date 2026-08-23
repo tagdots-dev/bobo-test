@@ -15,9 +15,9 @@ def setup_logging() -> logging.Logger:
 
     logger = logging.getLogger(loggers_name)
 
-    # If the logger already has handlers attached, assume skip
-    # re-configuration to prevent duplicate log entries when
-    # the module is imported multiple times.
+    # If the logger already has handlers attached, assume configuration has
+    # already been performed and skip re‑configuration. This prevents duplicate
+    # log entries when the module is imported multiple times.
     if logger.handlers:
         logger.setLevel(log_level)
         return logger
