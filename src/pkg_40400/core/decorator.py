@@ -17,7 +17,7 @@ class ClsFalseError(ValueError):
         super().__init__(clserr_message)
 
 
-def raise_on_false(exception_type=ClsFalseError, custom_message=None):
+def raise_on_false(exception_type: type[ValueError] = ClsFalseError, custom_message=None):
     """
     Raise an exception if the decorated function returns False
     """

@@ -63,3 +63,21 @@ def test_decorator_return_false_custom_exception_log_true():
         return_false(enable_log=True)
 
     assert "black jack" in str(exc_info.value)
+
+
+def test_decorator_return_false_custom_exception_type():
+    """
+    validate that raise_on_false with custom exception_type works correctly
+    """
+
+    class CustomError(ValueError):
+        pass
+
+    @raise_on_false(CustomError, custom_message="custom error message")
+    def return_false():
+        return False
+
+    with pytest.raises(CustomError) as exc_info:
+        return_false()
+
+    assert "custom error message" in str(exc_info.value)
