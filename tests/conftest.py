@@ -31,16 +31,24 @@ def valid_yaml(tmp_path):
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
-            "json": {"format": '{"msg": "%(message)s"}'},
+            "plain": {
+                "format": "%(asctime)s.%(msecs)03d::%(levelname)s::%(funcName)s::%(filename)s:%(lineno)s::%(message)s"
+            },
         },
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
-                "formatter": "json",
+                "formatter": "plain",
                 "stream": "ext://sys.stdout",
             },
         },
-        "root": {"level": "DEBUG", "handlers": ["console"]},
+        "loggers": {
+            "test_logger": {
+                "level": "DEBUG",
+                "handlers": ["console"],
+                "propagate": False,
+            },
+        },
     }
     path = tmp_path / "logging.yaml"
     path.write_text(yaml.dump(config_content))

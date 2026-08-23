@@ -6,61 +6,6 @@ import yaml
 
 from pkg_40400.core.logger import setup_logging
 
-# @pytest.fixture(autouse=True)
-# def _reset_logging():
-#     """
-#     Save and restore global logging state around every test.
-#     """
-
-#     root = logging.getLogger()
-#     saved_level = root.level
-#     saved_handlers = list(root.handlers)
-
-#     yield
-
-#     root.handlers = saved_handlers
-#     root.level = saved_level
-
-
-# @pytest.fixture
-# def valid_yaml(tmp_path):
-#     """
-#     Write a minimal valid dictConfig YAML and return its path.
-#     """
-
-#     config_content = {
-#         "version": 1,
-#         "disable_existing_loggers": False,
-#         "formatters": {
-#             "json": {"format": '{"msg": "%(message)s"}'},
-#         },
-#         "handlers": {
-#             "console": {
-#                 "class": "logging.StreamHandler",
-#                 "formatter": "json",
-#                 "stream": "ext://sys.stdout",
-#             },
-#         },
-#         "root": {"level": "DEBUG", "handlers": ["console"]},
-#     }
-#     path = tmp_path / "logging.yaml"
-#     path.write_text(yaml.dump(config_content))
-#     return path
-
-
-# @pytest.fixture
-# def mock_settings(tmp_path, valid_yaml):
-#     """
-#     Patch AppSettings to return controlled values.
-#     """
-
-#     with patch("pkg_40400.core.logger.AppSettings") as MockAppSettings:
-#         instance = MockAppSettings.return_value
-#         instance.LOG_LEVEL = logging.DEBUG
-#         instance.LOG_CFG_PATH = valid_yaml
-#         instance.LOGGERS_NAME = "test_logger"
-#         yield instance
-
 
 class TestSetupLoggingYamlLoaded:
     """
@@ -81,27 +26,29 @@ class TestSetupLoggingYamlLoaded:
 
     def test_yaml_handlers_are_applied(self, mock_settings):
         logger = setup_logging()
-        # dictConfig with a "root" key configures the root logger;
-        # the named logger inherits handlers via propagation.
+        # dictConfig with a "loggers" key configures the named logger;
+        # the logger has its own handlers (propagate=False).
         assert logger.name == "test_logger"
-        root = logging.getLogger()
-        assert len(root.handlers) >= 1
-        assert isinstance(root.handlers[0], logging.StreamHandler)
+        assert len(logger.handlers) >= 1
+        assert isinstance(logger.handlers[0], logging.StreamHandler)
 
     def test_yaml_formatter_is_applied(self, mock_settings):
         setup_logging()
-        root = logging.getLogger()
-        handler = root.handlers[0]
+        handler = logging.getLogger("test_logger").handlers[0]
         assert handler.formatter is not None
-        assert handler.formatter._fmt == '{"msg": "%(message)s"}'
+        assert (
+            handler.formatter._fmt
+            == "%(asctime)s.%(msecs)03d::%(levelname)s::%(funcName)s::%(filename)s:%(lineno)s::%(message)s"
+        )
 
-    def test_round_trip_message(self, mock_settings, capsys):
-        """A log call should produce the JSON-formatted output from YAML."""
+    def test_round_trip_message(self, mock_settings, capfd):
+        """A log call should produce the plain-formatted output from YAML."""
         setup_logging()
         logger = logging.getLogger("test_logger")
         logger.info("hello")
-        captured = capsys.readouterr()
-        assert '"msg": "hello"' in captured.out
+        captured = capfd.readouterr()
+        assert "hello" in captured.out
+        assert "INFO" in captured.out
 
 
 class TestSetupLoggingFallbackFileNotFound:
@@ -253,3 +200,58 @@ class TestSetupLoggingEdgeCases:
         assert isinstance(logger, logging.Logger)
         # yaml.safe_load("") returns None → dictConfig(None) raises
         assert any(rec.levelname == "WARNING" for rec in caplog.records)
+
+
+class TestSetupLoggingWithExistingHandlers:
+    """
+    Test the case when logger already has handlers (lines 21-23)
+    """
+
+    def test_returns_existing_logger_when_handlers_present(self, tmp_path):
+        """When logger already has handlers, return it without reconfiguring."""
+        config_content = {
+            "version": 1,
+            "disable_existing_loggers": False,
+            "formatters": {
+                "standard": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"},
+            },
+            "handlers": {
+                "console": {
+                    "class": "logging.StreamHandler",
+                    "formatter": "standard",
+                    "stream": "ext://sys.stdout",
+                },
+            },
+            "loggers": {
+                "existing_handlers_logger": {
+                    "level": "DEBUG",
+                    "handlers": ["console"],
+                    "propagate": False,
+                },
+            },
+            "root": {"level": "DEBUG", "handlers": []},
+        }
+        path = tmp_path / "logging.yaml"
+        path.write_text(yaml.dump(config_content))
+
+        # First call to setup logging - creates logger with handlers
+        with patch("pkg_40400.core.logger.AppSettings") as MockAppSettings:
+            instance = MockAppSettings.return_value
+            instance.LOG_LEVEL = logging.DEBUG
+            instance.LOG_CFG_PATH = path
+            instance.LOGGERS_NAME = "existing_handlers_logger"
+            logger1 = setup_logging()
+
+        # Second call should return same logger (short-circuit on line 21-23)
+        with patch("pkg_40400.core.logger.AppSettings") as MockAppSettings:
+            instance = MockAppSettings.return_value
+            instance.LOG_LEVEL = logging.ERROR  # Different level
+            instance.LOG_CFG_PATH = path
+            instance.LOGGERS_NAME = "existing_handlers_logger"
+
+            logger2 = setup_logging()
+
+        # Should be the same logger object
+        assert logger1 is logger2
+        # Level should have been updated from second call
+        assert logger2.level == logging.ERROR
