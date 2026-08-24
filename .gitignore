@@ -111,9 +111,12 @@ nohup.out
 .claude/
 .clinerules/
 .cursor/
-.kiro/
+.clineignore
+.continueignore
+.continuerc.json
 
 # -------------------- Python --------------------- #
+.coveragerc
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
