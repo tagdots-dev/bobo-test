@@ -30,6 +30,7 @@ scripts.pkg-40400 = "pkg_40400.cli:main"
 [dependency-groups]
 dev = [
   "commitizen",
+  "coverage",
   "pre-commit",
 ]
 test = [
@@ -45,6 +46,9 @@ security = [
 version.path = "src/pkg_40400/__init__.py"
 metadata.directory = "src"
 build.targets.wheel.packages = [ "src/pkg_40400" ]
+
+[tool.uv]
+default-groups = [ "dev", "test" ]
 
 [tool.black]
 line-length = 125
