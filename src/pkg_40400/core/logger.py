@@ -8,6 +8,7 @@ from pkg_40400.core.config import AppSettings
 
 def setup_logging() -> logging.Logger:
     """Configure the package logger"""
+
     settings = AppSettings()
     log_level = settings.LOG_LEVEL
     log_config_path = settings.LOG_CFG_PATH
@@ -28,8 +29,18 @@ def setup_logging() -> logging.Logger:
             config_dict = yaml.safe_load(f)
         config.dictConfig(config_dict)
     except Exception as e:
-        """Fallback to a simple ``basicConfig`` when the config file cannot be
-        loaded (e.g., missing file or parsing error)."""
+        """
+        Fallback to a simple ``basicConfig`` when the config file cannot be
+        loaded (e.g., missing file or parsing error).
+        """
+
+        # # PLAIN
+        LOG_FORMAT = "%(asctime)s.%(msecs)03d::%(levelname)s::%(funcName)s::%(filename)s:%(lineno)s::%(message)s"
+
+        # # LAMBDA_JSON
+        # LOG_FORMAT = '"_l": "%(levelname)s", ' '"_m": "%(filename)s:%(lineno)s", ' '"_d": "%(message)s"}'
+
+        # # JSON
         # LOG_FORMAT = (
         #     '{"_t": "%(asctime)s.%(msecs)03d", '
         #     '"_l": "%(levelname)s", '
@@ -37,7 +48,7 @@ def setup_logging() -> logging.Logger:
         #     '"_m": "%(filename)s:%(lineno)s", '
         #     '"_d": "%(message)s"}'
         # )
-        LOG_FORMAT = "%(asctime)s.%(msecs)03d::%(levelname)s::%(funcName)s::%(filename)s:%(lineno)s::%(message)s"
+
         logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
         logger.warning(e)
 

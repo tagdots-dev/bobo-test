@@ -5,7 +5,8 @@ from dataclasses import dataclass, field
 
 @dataclass(frozen=True)
 class AppSettings:
-    # Explicitly typed fields; provide defaults or let them be set via __post_init__
+    """Explicitly typed fields; provide defaults or let them be set via __post_init__"""
+
     ENV: str = ""
     DEBUG: bool = False
 
@@ -19,7 +20,8 @@ class AppSettings:
     LOG_LEVEL: int = field(init=False)
 
     def __post_init__(self) -> None:
-        # Ensure loggers_name_value is in the list
+        """Ensure loggers_name_value is in the list"""
+
         loggers_name_value = os.getenv("LOGGERS_NAME", "default").lower()
         object.__setattr__(
             self,
