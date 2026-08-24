@@ -72,9 +72,9 @@ venv = ".venv"
 venvPath = "."
 
 [tool.coverage]
-run.branch = true
-run.omit = [ "tests/*" ]
 run.source = [ "src/pkg_40400" ]
+run.omit = [ "tests/*" ]
+run.branch = true
 report.fail_under = 80
 report.show_missing = false
 
