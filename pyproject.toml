@@ -30,7 +30,6 @@ scripts.pkg-40400 = "pkg_40400.cli:main"
 [dependency-groups]
 dev = [
   "commitizen",
-  "coverage",
   "pre-commit",
 ]
 test = [
