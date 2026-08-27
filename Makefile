@@ -36,7 +36,7 @@ test-only:
 
 test-plus:
 	@echo "***************************************************************************"
-	@echo "*** Append dependency-groups for CICD"
+	@echo "*** Install dependency-groups for CICD"
 	@echo "***************************************************************************"
 	uv sync --only-group test --only-group security
 
