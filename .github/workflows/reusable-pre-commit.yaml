@@ -45,6 +45,14 @@ jobs:
         shell: bash
         run: make test-plus
 
+      - name: Cache pre-commit
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pre-commit-
+
       - name: Run pre-commit on everything
         shell: bash
         run: uv run pre-commit run -a -v
