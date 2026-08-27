@@ -58,8 +58,8 @@ class TestSetupLoggingFallbackFileNotFound:
 
     def test_returns_logger_when_file_missing(self, tmp_path):
         missing = tmp_path / "does_not_exist.yaml"
-        with patch("pkg_40400.core.logger.AppSettings") as MockAppSettings:
-            instance = MockAppSettings.return_value
+        with patch("pkg_40400.core.logger.ClsSettings") as MockClsSettings:
+            instance = MockClsSettings.return_value
             instance.LOG_LEVEL = logging.INFO
             instance.LOG_CFG_PATH = missing
             instance.LOGGERS_NAME = "fallback_logger"
@@ -72,8 +72,8 @@ class TestSetupLoggingFallbackFileNotFound:
 
     def test_basic_config_is_used_on_missing_file(self, tmp_path, caplog):
         missing = tmp_path / "nope.yaml"
-        with patch("pkg_40400.core.logger.AppSettings") as MockAppSettings:
-            instance = MockAppSettings.return_value
+        with patch("pkg_40400.core.logger.ClsSettings") as MockClsSettings:
+            instance = MockClsSettings.return_value
             instance.LOG_LEVEL = logging.INFO
             instance.LOG_CFG_PATH = missing
             instance.LOGGERS_NAME = "fallback_logger"
@@ -86,8 +86,8 @@ class TestSetupLoggingFallbackFileNotFound:
 
     def test_fallback_handler_has_json_format(self, tmp_path):
         missing = tmp_path / "nope.yaml"
-        with patch("pkg_40400.core.logger.AppSettings") as MockAppSettings:
-            instance = MockAppSettings.return_value
+        with patch("pkg_40400.core.logger.ClsSettings") as MockClsSettings:
+            instance = MockClsSettings.return_value
             instance.LOG_LEVEL = logging.INFO
             instance.LOG_CFG_PATH = missing
             instance.LOGGERS_NAME = "fallback_logger"
@@ -107,8 +107,8 @@ class TestSetupLoggingFallbackMalformedYaml:
         bad = tmp_path / "bad.yaml"
         bad.write_text("this: is: not: valid: yaml: [")
 
-        with patch("pkg_40400.core.logger.AppSettings") as MockAppSettings:
-            instance = MockAppSettings.return_value
+        with patch("pkg_40400.core.logger.ClsSettings") as MockClsSettings:
+            instance = MockClsSettings.return_value
             instance.LOG_LEVEL = logging.WARNING
             instance.LOG_CFG_PATH = bad
             instance.LOGGERS_NAME = "bad_yaml_logger"
@@ -123,8 +123,8 @@ class TestSetupLoggingFallbackMalformedYaml:
         bad = tmp_path / "bad.yaml"
         bad.write_text("this: is: not: valid: yaml: [")
 
-        with patch("pkg_40400.core.logger.AppSettings") as MockAppSettings:
-            instance = MockAppSettings.return_value
+        with patch("pkg_40400.core.logger.ClsSettings") as MockClsSettings:
+            instance = MockClsSettings.return_value
             instance.LOG_LEVEL = logging.WARNING
             instance.LOG_CFG_PATH = bad
             instance.LOGGERS_NAME = "bad_yaml_logger"
@@ -145,8 +145,8 @@ class TestSetupLoggingFallbackInvalidSchema:
         bad = tmp_path / "invalid_schema.yaml"
         bad.write_text(yaml.dump({"version": 1, "root": "not_a_dict"}))
 
-        with patch("pkg_40400.core.logger.AppSettings") as MockAppSettings:
-            instance = MockAppSettings.return_value
+        with patch("pkg_40400.core.logger.ClsSettings") as MockClsSettings:
+            instance = MockClsSettings.return_value
             instance.LOG_LEVEL = logging.ERROR
             instance.LOG_CFG_PATH = bad
             instance.LOGGERS_NAME = "schema_logger"
@@ -173,8 +173,8 @@ class TestSetupLoggingEdgeCases:
         path = tmp_path / "logging.yaml"
         path.write_text(yaml.dump(config_content))
 
-        with patch("pkg_40400.core.logger.AppSettings") as MockAppSettings:
-            instance = MockAppSettings.return_value
+        with patch("pkg_40400.core.logger.ClsSettings") as MockClsSettings:
+            instance = MockClsSettings.return_value
             instance.LOG_LEVEL = logging.ERROR  # stricter than YAML's DEBUG
             instance.LOG_CFG_PATH = path
             instance.LOGGERS_NAME = "override_logger"
@@ -188,8 +188,8 @@ class TestSetupLoggingEdgeCases:
         empty = tmp_path / "empty.yaml"
         empty.write_text("")
 
-        with patch("pkg_40400.core.logger.AppSettings") as MockAppSettings:
-            instance = MockAppSettings.return_value
+        with patch("pkg_40400.core.logger.ClsSettings") as MockClsSettings:
+            instance = MockClsSettings.return_value
             instance.LOG_LEVEL = logging.INFO
             instance.LOG_CFG_PATH = empty
             instance.LOGGERS_NAME = "empty_logger"
@@ -235,16 +235,16 @@ class TestSetupLoggingWithExistingHandlers:
         path.write_text(yaml.dump(config_content))
 
         # First call to setup logging - creates logger with handlers
-        with patch("pkg_40400.core.logger.AppSettings") as MockAppSettings:
-            instance = MockAppSettings.return_value
+        with patch("pkg_40400.core.logger.ClsSettings") as MockClsSettings:
+            instance = MockClsSettings.return_value
             instance.LOG_LEVEL = logging.DEBUG
             instance.LOG_CFG_PATH = path
             instance.LOGGERS_NAME = "existing_handlers_logger"
             logger1 = setup_logging()
 
         # Second call should return same logger (short-circuit on line 21-23)
-        with patch("pkg_40400.core.logger.AppSettings") as MockAppSettings:
-            instance = MockAppSettings.return_value
+        with patch("pkg_40400.core.logger.ClsSettings") as MockClsSettings:
+            instance = MockClsSettings.return_value
             instance.LOG_LEVEL = logging.ERROR  # Different level
             instance.LOG_CFG_PATH = path
             instance.LOGGERS_NAME = "existing_handlers_logger"
@@ -255,3 +255,14 @@ class TestSetupLoggingWithExistingHandlers:
         assert logger1 is logger2
         # Level should have been updated from second call
         assert logger2.level == logging.ERROR
+
+
+class TestGetLoggerWithName:
+    """Tests for get_logger with a name parameter."""
+
+    def test_get_logger_with_name(self):
+        """Test get_logger returns a logger with the specified name."""
+        from pkg_40400.core.logger import get_logger
+
+        logger = get_logger("custom_logger")
+        assert logger.name == "custom_logger"
