@@ -479,7 +479,6 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "commitizen" },
-    { name = "coverage" },
     { name = "pre-commit" },
 ]
 security = [
@@ -492,12 +491,11 @@ test = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pyyaml", specifier = ">=6.0.3" }]
+requires-dist = [{ name = "pyyaml", specifier = "~=6.0.3" }]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "commitizen" },
-    { name = "coverage" },
     { name = "pre-commit" },
 ]
 security = [
