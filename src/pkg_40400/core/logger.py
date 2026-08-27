@@ -81,5 +81,4 @@ def get_logger(name: str | None = None) -> logging.Logger:
     return logging.getLogger(name)
 
 
-# Alias for backward compatibility with existing tests
 setup_logging = initialize_logger
