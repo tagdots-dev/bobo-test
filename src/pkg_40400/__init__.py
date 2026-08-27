@@ -2,7 +2,7 @@ from pkg_40400.core.config import ClsSettings
 from pkg_40400.core.decorator import ClsFalseError, raise_on_false
 from pkg_40400.core.logger import get_logger, initialize_logger
 
-__version__ = "0.0.0"
+__version__ = "0.1.0"
 version = __version__
 
 __all__ = (
